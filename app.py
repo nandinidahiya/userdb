@@ -1,15 +1,9 @@
 """
 Database System with User Login and Record Management
-Built with Flask + SQLite
-Deploy: Render.com | Email: Mailtrap
+Flask + SQLite | Deploy: Render.com | Email: Mailtrap
 """
 
-import os
-import random
-import secrets
-import string
-import smtplib
-import sqlite3
+import os, random, secrets, string, smtplib, sqlite3
 from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -17,12 +11,9 @@ from functools import wraps
 
 import pandas as pd
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import (Flask, render_template, request, redirect,
-                   url_for, session, flash, g)
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g
 
-# ──────────────────────────────────────────────
-# CONFIG
-# ──────────────────────────────────────────────
+# ── CONFIG ──────────────────────────────────────────────────────────────────
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', secrets.token_hex(32))
 
@@ -35,9 +26,7 @@ EMAIL_USER     = os.getenv('EMAIL_USER',     '')
 EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', '')
 EMAIL_FROM     = os.getenv('EMAIL_FROM',     'system@userdb.com')
 
-# ──────────────────────────────────────────────
-# DATABASE
-# ──────────────────────────────────────────────
+# ── DATABASE ─────────────────────────────────────────────────────────────────
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -73,9 +62,20 @@ def init_db():
         """)
         db.commit()
 
-# ──────────────────────────────────────────────
-# UTILITIES
-# ──────────────────────────────────────────────
+def create_demo_user():
+    with app.app_context():
+        db = get_db()
+        if not db.execute("SELECT id FROM users WHERE username='demo.user'").fetchone():
+            db.execute("""
+                INSERT INTO users (name,email,phone,department,username,
+                                   password_hash,must_change_password,is_verified)
+                VALUES (?,?,?,?,?,?,0,1)
+            """, ('Demo User','demo@example.com','+91-9999999999',
+                  'Engineering','demo.user',generate_password_hash('Demo@1234')))
+            db.commit()
+            print("Demo user created: demo.user / Demo@1234")
+
+# ── UTILITIES ────────────────────────────────────────────────────────────────
 def generate_password(length=10):
     chars = string.ascii_letters + string.digits + '!@#$'
     return ''.join(secrets.choice(chars) for _ in range(length))
@@ -90,17 +90,11 @@ def generate_username(name, db):
         counter += 1
     return username
 
-def hash_password(plain):
-    return generate_password_hash(plain)
-
-def check_password(plain, hashed):
-    return check_password_hash(hashed, plain)
-
 def send_email(to_email, subject, html_body):
     if not EMAIL_USER or not EMAIL_PASSWORD:
         import re
         plain = re.sub('<[^>]+>', '', html_body).strip()
-        print(f"\n{'='*55}\n📧  TO: {to_email}\n📌  {subject}\n{plain}\n{'='*55}\n")
+        print(f"\n{'='*55}\nTO: {to_email}\n{subject}\n{plain}\n{'='*55}\n")
         return True
     try:
         msg = MIMEMultipart('alternative')
@@ -113,45 +107,39 @@ def send_email(to_email, subject, html_body):
             server.starttls()
             server.login(EMAIL_USER, EMAIL_PASSWORD)
             server.send_message(msg)
-        print(f"[EMAIL OK] '{subject}' → {to_email}")
+        print(f"[EMAIL OK] {subject} -> {to_email}")
         return True
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
         return False
 
 def credentials_email(name, username, password, email):
-    html = f"""
-    <div style="font-family:Georgia,serif;max-width:560px;margin:auto;background:#0d0d0d;
-                color:#e8e0d0;padding:40px;border-radius:8px;">
-      <h2 style="color:#c9a96e;letter-spacing:2px;font-size:22px;">YOUR ACCESS CREDENTIALS</h2>
-      <p>Hello <strong>{name}</strong>,</p>
-      <p>Your account has been created. Use the details below to sign in:</p>
-      <div style="background:#1a1a1a;padding:20px;border-left:3px solid #c9a96e;margin:24px 0;border-radius:4px;">
-        <p style="margin:4px 0;"><span style="color:#c9a96e;">Username:</span> <strong>{username}</strong></p>
-        <p style="margin:4px 0;"><span style="color:#c9a96e;">Password:</span> <strong>{password}</strong></p>
+    html = f"""<div style="font-family:Georgia,serif;max-width:560px;margin:auto;
+        background:#0d0d0d;color:#e8e0d0;padding:40px;border-radius:8px;">
+      <h2 style="color:#c9a96e;">YOUR ACCESS CREDENTIALS</h2>
+      <p>Hello <strong>{name}</strong>, your account has been created.</p>
+      <div style="background:#1a1a1a;padding:20px;border-left:3px solid #c9a96e;margin:24px 0;">
+        <p>Username: <strong>{username}</strong></p>
+        <p>Password: <strong>{password}</strong></p>
       </div>
-      <p style="color:#999;font-size:13px;">You will be asked to change your password on first login.</p>
+      <p style="color:#999;font-size:13px;">Change your password on first login.</p>
     </div>"""
     send_email(email, "Your Login Credentials", html)
 
 def otp_email(name, otp, email):
-    html = f"""
-    <div style="font-family:Georgia,serif;max-width:560px;margin:auto;background:#0d0d0d;
-                color:#e8e0d0;padding:40px;border-radius:8px;">
-      <h2 style="color:#c9a96e;letter-spacing:2px;font-size:22px;">VERIFY YOUR EMAIL</h2>
-      <p>Hello <strong>{name}</strong>,</p>
-      <p>Your one-time verification code is:</p>
+    html = f"""<div style="font-family:Georgia,serif;max-width:560px;margin:auto;
+        background:#0d0d0d;color:#e8e0d0;padding:40px;border-radius:8px;">
+      <h2 style="color:#c9a96e;">VERIFY YOUR EMAIL</h2>
+      <p>Hello <strong>{name}</strong>, your verification code is:</p>
       <div style="background:#1a1a1a;padding:24px;text-align:center;
-                  border-left:3px solid #c9a96e;margin:24px 0;border-radius:4px;">
+          border-left:3px solid #c9a96e;margin:24px 0;">
         <span style="font-size:36px;letter-spacing:12px;color:#c9a96e;font-weight:bold;">{otp}</span>
       </div>
-      <p style="color:#999;font-size:13px;">This code expires in 10 minutes.</p>
+      <p style="color:#999;font-size:13px;">Expires in 10 minutes.</p>
     </div>"""
     send_email(email, "Email Verification OTP", html)
 
-# ──────────────────────────────────────────────
-# AUTH
-# ──────────────────────────────────────────────
+# ── AUTH ─────────────────────────────────────────────────────────────────────
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -166,9 +154,7 @@ def get_current_user():
         return None
     return get_db().execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
 
-# ──────────────────────────────────────────────
-# ROUTES
-# ──────────────────────────────────────────────
+# ── ROUTES ───────────────────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return redirect(url_for('dashboard') if 'user_id' in session else url_for('login'))
@@ -182,7 +168,7 @@ def login():
         password = request.form.get('password', '').strip()
         db   = get_db()
         user = db.execute('SELECT * FROM users WHERE username=?', (username,)).fetchone()
-        if user and check_password(password, user['password_hash']):
+        if user and check_password_hash(user['password_hash'], password):
             session['user_id'] = user['id']
             db.execute("UPDATE users SET last_login=datetime('now') WHERE id=?", (user['id'],))
             db.commit()
@@ -207,7 +193,7 @@ def change_password():
         current  = request.form.get('current_password', '')
         new_pass = request.form.get('new_password', '')
         confirm  = request.form.get('confirm_password', '')
-        if not check_password(current, user['password_hash']):
+        if not check_password_hash(user['password_hash'], current):
             flash('Current password is incorrect.', 'error')
         elif len(new_pass) < 8:
             flash('New password must be at least 8 characters.', 'error')
@@ -216,7 +202,7 @@ def change_password():
         else:
             db = get_db()
             db.execute('UPDATE users SET password_hash=?, must_change_password=0 WHERE id=?',
-                       (hash_password(new_pass), user['id']))
+                       (generate_password_hash(new_pass), user['id']))
             db.commit()
             flash('Password changed successfully!', 'success')
             return redirect(url_for('dashboard'))
@@ -280,7 +266,7 @@ def register():
             'department': department, 'otp': otp, 'otp_expiry': expiry
         }
         otp_email(name, otp, email)
-        flash(f'OTP sent to {email}. Check your inbox (and spam folder).', 'info')
+        flash(f'OTP sent to {email}. Check inbox and spam.', 'info')
         return redirect(url_for('verify_otp'))
     return render_template('register.html')
 
@@ -303,15 +289,15 @@ def verify_otp():
         username = generate_username(pending['name'], db)
         plain_pw = generate_password()
         db.execute("""
-            INSERT INTO users (name, email, phone, department, username,
-                               password_hash, must_change_password, is_verified)
+            INSERT INTO users (name,email,phone,department,username,
+                               password_hash,must_change_password,is_verified)
             VALUES (?,?,?,?,?,?,1,1)
         """, (pending['name'], pending['email'], pending['phone'],
-              pending['department'], username, hash_password(plain_pw)))
+              pending['department'], username, generate_password_hash(plain_pw)))
         db.commit()
         credentials_email(pending['name'], username, plain_pw, pending['email'])
         session.pop('pending_reg', None)
-        flash('Email verified! Your login credentials have been sent to your inbox.', 'success')
+        flash('Email verified! Credentials sent to your inbox.', 'success')
         return redirect(url_for('login'))
     return render_template('verify_otp.html', email=pending['email'])
 
@@ -333,13 +319,13 @@ def import_excel():
     if request.method == 'POST':
         file = request.files.get('excel_file')
         if not file or not file.filename.endswith(('.xlsx', '.xls')):
-            flash('Please upload a valid Excel file (.xlsx or .xls).', 'error')
+            flash('Please upload a valid Excel file.', 'error')
             return render_template('import_excel.html')
         try:
             df = pd.read_excel(file)
             df.columns = [c.strip().lower() for c in df.columns]
             if not {'name', 'email'}.issubset(set(df.columns)):
-                flash('Excel must have at least "Name" and "Email" columns.', 'error')
+                flash('Excel must have at least Name and Email columns.', 'error')
                 return render_template('import_excel.html')
             db = get_db()
             created, skipped = 0, 0
@@ -355,16 +341,16 @@ def import_excel():
                 username = generate_username(name, db)
                 plain_pw = generate_password()
                 db.execute("""
-                    INSERT INTO users (name, email, phone, department, username,
-                                       password_hash, must_change_password, is_verified)
+                    INSERT INTO users (name,email,phone,department,username,
+                                       password_hash,must_change_password,is_verified)
                     VALUES (?,?,?,?,?,?,1,1)
-                """, (name, email, phone, dept, username, hash_password(plain_pw)))
+                """, (name, email, phone, dept, username, generate_password_hash(plain_pw)))
                 db.commit()
                 credentials_email(name, username, plain_pw, email)
                 created += 1
             flash(f'Import complete — {created} users created, {skipped} skipped.', 'success')
         except Exception as e:
-            flash(f'Error processing file: {e}', 'error')
+            flash(f'Error: {e}', 'error')
         return render_template('import_excel.html')
     return render_template('import_excel.html')
 
@@ -376,27 +362,12 @@ def admin_users():
         'FROM users ORDER BY created_at DESC'
     ).fetchall()
     return render_template('admin_users.html', users=users)
-  
-# ──────────────────────────────────────────────
-# STARTUP
-# ──────────────────────────────────────────────
-init_db()
 
-# Auto-create demo user on every startup (works on Render too)
-with app.app_context():
-    db = get_db()
-    if not db.execute("SELECT id FROM users WHERE username='demo.user'").fetchone():
-        db.execute("""
-            INSERT INTO users (name, email, phone, department, username,
-                               password_hash, must_change_password, is_verified)
-            VALUES (?,?,?,?,?,?,0,1)
-        """, ('Demo User', 'demo@example.com', '+91-9999999999',
-              'Engineering', 'demo.user', hash_password('Demo@1234')))
-        db.commit()
-        print("👤 Demo user created: demo.user / Demo@1234")
+# ── STARTUP ──────────────────────────────────────────────────────────────────
+# Runs for BOTH gunicorn (Render) and local python app.py
+init_db()
+create_demo_user()
 
 if __name__ == '__main__':
     print("\n🚀  http://127.0.0.1:5000")
-    print("📥  Import  → http://127.0.0.1:5000/import-excel")
-    print("👑  Admin   → http://127.0.0.1:5000/admin/users\n")
     app.run(debug=True)
