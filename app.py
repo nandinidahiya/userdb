@@ -376,23 +376,25 @@ def admin_users():
         'FROM users ORDER BY created_at DESC'
     ).fetchall()
     return render_template('admin_users.html', users=users)
-
+  
 # ──────────────────────────────────────────────
 # STARTUP
 # ──────────────────────────────────────────────
 init_db()
 
-    with app.app_context():
-        db = get_db()
-        if not db.execute("SELECT id FROM users WHERE username='demo.user'").fetchone():
-            db.execute("""
-                INSERT INTO users (name, email, phone, department, username,
-                                   password_hash, must_change_password, is_verified)
-                VALUES (?,?,?,?,?,?,0,1)
-            """, ('Demo User', 'demo@example.com', '+91-9999999999',
-                  'Engineering', 'demo.user', hash_password('Demo@1234')))
-            db.commit()
-            print("👤  Demo user created → username: demo.user  |  password: Demo@1234")
+# Auto-create demo user on every startup (works on Render too)
+with app.app_context():
+    db = get_db()
+    if not db.execute("SELECT id FROM users WHERE username='demo.user'").fetchone():
+        db.execute("""
+            INSERT INTO users (name, email, phone, department, username,
+                               password_hash, must_change_password, is_verified)
+            VALUES (?,?,?,?,?,?,0,1)
+        """, ('Demo User', 'demo@example.com', '+91-9999999999',
+              'Engineering', 'demo.user', hash_password('Demo@1234')))
+        db.commit()
+        print("👤 Demo user created: demo.user / Demo@1234")
+
 if __name__ == '__main__':
     print("\n🚀  http://127.0.0.1:5000")
     print("📥  Import  → http://127.0.0.1:5000/import-excel")
