@@ -382,7 +382,6 @@ def admin_users():
 # ──────────────────────────────────────────────
 init_db()
 
-if __name__ == '__main__':
     with app.app_context():
         db = get_db()
         if not db.execute("SELECT id FROM users WHERE username='demo.user'").fetchone():
@@ -393,8 +392,8 @@ if __name__ == '__main__':
             """, ('Demo User', 'demo@example.com', '+91-9999999999',
                   'Engineering', 'demo.user', hash_password('Demo@1234')))
             db.commit()
-            print("👤  Demo login → username: demo.user  |  password: Demo@1234")
-
+            print("👤  Demo user created → username: demo.user  |  password: Demo@1234")
+if __name__ == '__main__':
     print("\n🚀  http://127.0.0.1:5000")
     print("📥  Import  → http://127.0.0.1:5000/import-excel")
     print("👑  Admin   → http://127.0.0.1:5000/admin/users\n")
