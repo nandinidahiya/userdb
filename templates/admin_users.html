@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Admin — All Users{% endblock %}
+{% block content %}
+<h1>All <em>Users</em></h1>
+<p class="subtitle">Administrator view — {{ users|length }} total records</p>
+
+<div class="card" style="padding:0;overflow:hidden;">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Department</th>
+        <th>Last Login</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;">{{ u['id'] }}</td>
+        <td style="color:var(--text);">{{ u['name'] }}</td>
+        <td>{{ u['email'] }}</td>
+        <td>
+          <span class="badge badge-gold">{{ u['username'] }}</span>
+        </td>
+        <td>{{ u['department'] or '—' }}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">
+          {{ u['last_login'][:16] if u['last_login'] else '—' }}
+        </td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">
+          {{ u['created_at'][:10] }}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">
+          No users yet. <a href="{{ url_for('import_excel') }}" style="color:var(--gold);">Import from Excel →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider"/>
+<div style="display:flex;gap:20px;">
+  <a class="link-small" href="{{ url_for('import_excel') }}">→ Import Excel</a>
+  <a class="link-small" href="{{ url_for('register') }}">→ Register user</a>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Login — UserDB{% endblock %}
+{% block content %}
+<h1>Sign <em>In</em></h1>
+<p class="subtitle">Enter your credentials to access your record</p>
+
+<div class="card">
+  <form method="POST">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" name="username" autocomplete="username" autofocus required/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" autocomplete="current-password" required/>
+    </div>
+    <button class="btn btn-primary btn-full" type="submit">Access System</button>
+  </form>
+</div>
+
+<hr class="divider"/>
+<div style="display:flex;justify-content:space-between;align-items:center;">
+  <a class="link-small" href="{{ url_for('register') }}">→ Create new account</a>
+  <a class="link-small" href="{{ url_for('import_excel') }}">→ Bulk import via Excel</a>
+</div>
+{% endblock %}

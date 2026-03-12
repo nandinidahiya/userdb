@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — UserDB{% endblock %}
+{% block content %}
+<h1>Your <em>Record</em></h1>
+<p class="subtitle">Logged in as {{ user['username'] }}</p>
+
+<div class="card">
+  <dl class="record">
+    <dt>Name</dt>       <dd>{{ user['name'] }}</dd>
+    <dt>Email</dt>      <dd>{{ user['email'] }}</dd>
+    <dt>Phone</dt>      <dd>{{ user['phone'] or '—' }}</dd>
+    <dt>Department</dt> <dd>{{ user['department'] or '—' }}</dd>
+    <dt>Username</dt>   <dd>
+      <span class="badge badge-gold">{{ user['username'] }}</span>
+    </dd>
+    <dt>Status</dt>     <dd>
+      <span class="badge badge-green">Active</span>
+    </dd>
+    <dt>Last Login</dt> <dd style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);">
+      {{ user['last_login'] or 'First session' }}
+    </dd>
+    <dt>Member Since</dt><dd style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);">
+      {{ user['created_at'][:10] }}
+    </dd>
+  </dl>
+
+  <div class="actions">
+    <a class="btn btn-outline" href="{{ url_for('edit') }}">Edit Record</a>
+    <form method="POST" action="{{ url_for('delete') }}"
+          onsubmit="return confirm('Permanently delete your account? This cannot be undone.')">
+      <button class="btn btn-danger" type="submit">Delete Account</button>
+    </form>
+  </div>
+</div>
+
+<hr class="divider"/>
+<div style="display:flex;justify-content:space-between;">
+  <a class="link-small" href="{{ url_for('change_password') }}">→ Change password</a>
+  <a class="link-small" href="{{ url_for('logout') }}">→ Logout</a>
+</div>
+{% endblock %}

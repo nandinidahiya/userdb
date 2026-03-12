@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Import Excel — UserDB{% endblock %}
+{% block extra_style %}
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  padding: 48px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  margin-bottom: 24px;
+}
+.upload-zone:hover { border-color: var(--gold); }
+.upload-zone input[type="file"] { display: none; }
+.upload-zone .icon { font-size: 40px; margin-bottom: 16px; }
+.upload-zone p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.upload-zone .filename {
+  color: var(--gold);
+  font-size: 14px;
+  margin-top: 12px;
+  min-height: 20px;
+}
+.schema-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.schema-row:last-child { border-bottom: none; }
+.col-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--gold);
+}
+.col-desc { font-size: 15px; color: var(--muted); }
+.required-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #c0392b;
+  text-transform: uppercase;
+}
+{% endblock %}
+{% block content %}
+<h1>Bulk <em>Import</em></h1>
+<p class="subtitle">Upload an Excel file to create multiple users at once</p>
+
+<div class="card">
+  <form method="POST" enctype="multipart/form-data" id="importForm">
+    <label for="fileInput" class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" name="excel_file"
+             accept=".xlsx,.xls" onchange="showFilename(this)"/>
+      <div class="icon">📊</div>
+      <p>Click to select Excel file</p>
+      <p>.xlsx or .xls format</p>
+      <div class="filename" id="filenameDisplay"></div>
+    </label>
+    <button class="btn btn-primary btn-full" type="submit" id="importBtn">
+      Import &amp; Send Credentials
+    </button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="font-size:16px;margin-bottom:20px;">Required Excel Format</h2>
+  <div class="schema-row">
+    <div class="col-name">Name <span class="required-tag">required</span></div>
+    <div class="col-desc">Full name of the user</div>
+  </div>
+  <div class="schema-row">
+    <div class="col-name">Email <span class="required-tag">required</span></div>
+    <div class="col-desc">Email address — used for sending credentials</div>
+  </div>
+  <div class="schema-row">
+    <div class="col-name">Phone</div>
+    <div class="col-desc">Phone number (optional)</div>
+  </div>
+  <div class="schema-row">
+    <div class="col-name">Department</div>
+    <div class="col-desc">Team or department name (optional)</div>
+  </div>
+</div>
+
+<div style="background:rgba(201,169,110,0.05);border:1px solid rgba(201,169,110,0.15);
+            border-radius:4px;padding:20px 24px;">
+  <p style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;
+            color:var(--gold);line-height:1.8;">
+    ⚡ On import: usernames &amp; passwords are auto-generated and emailed to each user.<br/>
+    Users with duplicate emails are skipped automatically.<br/>
+    All imported users must change their password on first login.
+  </p>
+</div>
+
+<script>
+function showFilename(input) {
+  const display = document.getElementById('filenameDisplay');
+  display.textContent = input.files[0] ? '✓ ' + input.files[0].name : '';
+}
+document.getElementById('importForm').addEventListener('submit', function() {
+  document.getElementById('importBtn').textContent = 'Importing…';
+  document.getElementById('importBtn').disabled = true;
+});
+</script>
+{% endblock %}
