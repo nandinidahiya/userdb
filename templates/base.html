@@ -5,125 +5,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}UserDB{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #0a0a0a;
-      --surface:  #111111;
-      --border:   #222222;
-      --gold:     #c9a96e;
-      --gold-dim: #8a6f42;
-      --text:     #e8e0d0;
-      --muted:    #666;
-      --danger:   #c0392b;
-      --success:  #2ecc71;
-      --info:     #3498db;
+      --bg:      #f5f4f0;
+      --surface: #ffffff;
+      --border:  #e0ddd6;
+      --dark:    #1a1a1a;
+      --accent:  #2563eb;
+      --accent2: #1d4ed8;
+      --text:    #1a1a1a;
+      --muted:   #6b7280;
+      --danger:  #dc2626;
+      --success: #16a34a;
+      --info:    #2563eb;
+      --gold:    #92400e;
     }
 
     html, body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 17px;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
       min-height: 100vh;
-    }
-
-    /* Grain overlay */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.4;
     }
 
     /* ── NAV ── */
     nav {
+      background: var(--dark);
+      padding: 0 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 40px;
-      border-bottom: 1px solid var(--border);
+      height: 56px;
       position: sticky; top: 0;
-      background: rgba(10,10,10,0.95);
-      backdrop-filter: blur(8px);
       z-index: 100;
     }
     .nav-brand {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      letter-spacing: 4px;
-      color: var(--gold);
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      color: #fff;
       text-decoration: none;
       text-transform: uppercase;
     }
-    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-brand span { color: #60a5fa; }
+    .nav-links { display: flex; gap: 4px; align-items: center; }
     .nav-links a {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      letter-spacing: 2px;
-      color: var(--muted);
+      letter-spacing: 1px;
+      color: #9ca3af;
       text-decoration: none;
       text-transform: uppercase;
-      transition: color 0.2s;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: background 0.15s, color 0.15s;
     }
-    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .nav-links a.nav-cta {
+      background: var(--accent);
+      color: #fff;
+      margin-left: 8px;
+    }
+    .nav-links a.nav-cta:hover { background: var(--accent2); }
 
     /* ── MAIN ── */
     main {
-      max-width: 780px;
+      max-width: 860px;
       margin: 0 auto;
-      padding: 60px 24px 100px;
-      animation: fadeUp 0.5s ease both;
+      padding: 48px 24px 80px;
+      animation: fadeUp 0.4s ease both;
     }
-
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── HEADINGS ── */
+    /* ── TYPOGRAPHY ── */
     h1 {
-      font-size: clamp(32px, 5vw, 52px);
-      font-weight: 300;
-      letter-spacing: -1px;
-      line-height: 1.1;
-      color: var(--text);
-      margin-bottom: 8px;
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 6px;
+      line-height: 1.2;
     }
-    h1 em { color: var(--gold); font-style: italic; }
-    h2 { font-size: 24px; font-weight: 300; margin-bottom: 20px; }
+    h1 em { color: var(--accent); font-style: normal; }
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
     .subtitle {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 3px;
+      font-size: 12px;
+      letter-spacing: 2px;
       color: var(--muted);
       text-transform: uppercase;
-      margin-bottom: 48px;
+      margin-bottom: 36px;
     }
 
     /* ── CARD ── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 40px;
-      margin-bottom: 24px;
+      border-radius: 8px;
+      padding: 32px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
 
     /* ── FORM ── */
-    .form-group { margin-bottom: 24px; }
+    .form-group { margin-bottom: 20px; }
     label {
       display: block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: var(--gold);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--dark);
+      margin-bottom: 6px;
       text-transform: uppercase;
-      margin-bottom: 8px;
     }
     input[type="text"],
     input[type="email"],
@@ -133,173 +133,161 @@
     select {
       width: 100%;
       background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 3px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
       color: var(--text);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-size: 16px;
-      padding: 12px 16px;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      padding: 10px 14px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    input:focus, select:focus { border-color: var(--gold); }
-    input[type="file"] { cursor: pointer; }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
 
     /* ── BUTTONS ── */
     .btn {
       display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      padding: 14px 32px;
-      border: 1px solid;
-      border-radius: 3px;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: 6px;
       cursor: pointer;
       text-decoration: none;
-      transition: all 0.2s;
+      border: 1.5px solid transparent;
+      transition: all 0.15s;
+      letter-spacing: 0.3px;
     }
-    .btn-primary {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: #0a0a0a;
-    }
-    .btn-primary:hover { background: #d4b07a; border-color: #d4b07a; }
-    .btn-outline {
-      background: transparent;
-      border-color: var(--border);
-      color: var(--muted);
-    }
-    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-    .btn-danger {
-      background: transparent;
-      border-color: var(--danger);
-      color: var(--danger);
-    }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+    .btn-outline { background: transparent; border-color: var(--border); color: var(--muted); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger { background: transparent; border-color: var(--danger); color: var(--danger); }
     .btn-danger:hover { background: var(--danger); color: #fff; }
-    .btn-full { width: 100%; text-align: center; }
+    .btn-full { width: 100%; text-align: center; display: block; }
 
-    /* ── ALERTS / FLASH ── */
-    .alerts { margin-bottom: 28px; }
+    /* ── ALERTS ── */
+    .alerts { margin-bottom: 24px; }
     .alert {
-      border-left: 3px solid;
-      padding: 14px 18px;
-      margin-bottom: 10px;
-      border-radius: 0 3px 3px 0;
-      font-size: 15px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 0.5px;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .alert-error   { border-color: var(--danger);  background: rgba(192,57,43,0.08);  color: #e74c3c; }
-    .alert-success { border-color: var(--success);  background: rgba(46,204,113,0.08); color: var(--success); }
-    .alert-info    { border-color: var(--info);     background: rgba(52,152,219,0.08); color: var(--info); }
+    .alert-error   { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+    .alert-info    { background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; }
 
     /* ── RECORD TABLE ── */
-    .record {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 0;
-    }
+    .record { display: grid; grid-template-columns: 160px 1fr; }
     .record dt {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--gold);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--muted);
       text-transform: uppercase;
-      padding: 16px 0;
+      padding: 14px 0;
       border-bottom: 1px solid var(--border);
       align-self: center;
     }
     .record dd {
-      padding: 16px 0 16px 20px;
+      padding: 14px 0 14px 16px;
       border-bottom: 1px solid var(--border);
-      font-size: 17px;
+      font-size: 15px;
       color: var(--text);
+      font-weight: 400;
     }
     .record dt:last-of-type, .record dd:last-of-type { border-bottom: none; }
 
-    /* ── ACTION ROW ── */
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
-
-    /* ── DIVIDER ── */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 32px 0;
-    }
-    .link-small {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 1px;
-      color: var(--muted);
-      text-decoration: none;
-    }
-    .link-small:hover { color: var(--gold); }
-
-    /* ── OTP BOXES ── */
-    .otp-display {
-      text-align: center;
-      padding: 32px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      margin: 24px 0;
-    }
-    .otp-email {
-      font-size: 20px;
-      color: var(--gold);
-      font-style: italic;
-    }
-
-    /* ── STATUS BADGE ── */
+    /* ── BADGES ── */
     .badge {
       display: inline-block;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 2px;
-      border: 1px solid;
+      font-size: 11px;
+      font-weight: 400;
+      padding: 3px 10px;
+      border-radius: 20px;
     }
-    .badge-gold   { border-color: var(--gold);    color: var(--gold); }
-    .badge-green  { border-color: var(--success);  color: var(--success); }
-    .badge-muted  { border-color: var(--muted);    color: var(--muted); }
+    .badge-gold  { background: #fef3c7; color: #92400e; }
+    .badge-green { background: #dcfce7; color: #16a34a; }
+    .badge-blue  { background: #dbeafe; color: #1d4ed8; }
+    .badge-muted { background: #f3f4f6; color: #6b7280; }
+
+    /* ── LINKS ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+    .link-small {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .link-small:hover { color: var(--accent); }
 
     /* ── TABLE ── */
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--gold);
-      text-transform: uppercase;
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
       color: var(--muted);
+      text-transform: uppercase;
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg);
     }
-    tr:hover td { color: var(--text); background: rgba(201,169,110,0.03); }
+    td { padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:hover td { background: #f9f9f7; }
+
+    /* ── OTP ── */
+    .otp-display {
+      text-align: center;
+      padding: 28px;
+      background: var(--bg);
+      border: 1.5px dashed var(--border);
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .otp-email { font-size: 18px; color: var(--accent); font-weight: 600; }
+    .otp-input {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 28px;
+      letter-spacing: 10px;
+      padding: 14px;
+      width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 16px; }
+      main { padding: 28px 16px 60px; }
+      .card { padding: 20px; }
+    }
   </style>
   {% block extra_style %}{% endblock %}
 </head>
 <body>
   <nav>
-    <a class="nav-brand" href="/">⬡ UserDB</a>
+    <a class="nav-brand" href="/">⬡ <span>User</span>DB</a>
     <div class="nav-links">
       {% if session.user_id %}
         <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('edit') }}">Edit</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('edit') }}">Edit Record</a>
+        <a href="{{ url_for('import_excel') }}">Import Excel</a>
+        <a href="{{ url_for('admin_users') }}">All Users</a>
+        <a href="{{ url_for('register') }}">+ New User</a>
+        <a href="{{ url_for('logout') }}" class="nav-cta">Logout</a>
       {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('import_excel') }}">Import Excel</a>
         <a href="{{ url_for('register') }}">Register</a>
-        <a href="{{ url_for('import_excel') }}">Import</a>
+        <a href="{{ url_for('login') }}" class="nav-cta">Login</a>
       {% endif %}
     </div>
   </nav>
@@ -309,7 +297,10 @@
       {% if messages %}
         <div class="alerts">
           {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
+            <div class="alert alert-{{ category }}">
+              {% if category == 'error' %}⚠️{% elif category == 'success' %}✅{% else %}ℹ️{% endif %}
+              {{ message }}
+            </div>
           {% endfor %}
         </div>
       {% endif %}

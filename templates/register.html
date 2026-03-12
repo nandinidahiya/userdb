@@ -1,31 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Register — UserDB{% endblock %}
 {% block content %}
-<h1>Create <em>Account</em></h1>
-<p class="subtitle">Enter your details to get started</p>
 
-<div class="card">
-  <form method="POST">
-    <div class="form-group">
-      <label>Full Name</label>
-      <input type="text" name="name" autofocus required/>
-    </div>
-    <div class="form-group">
-      <label>Email Address</label>
-      <input type="email" name="email" required/>
-    </div>
-    <div class="form-group">
-      <label>Phone <span style="color:var(--muted);">(optional)</span></label>
-      <input type="tel" name="phone"/>
-    </div>
-    <div class="form-group">
-      <label>Department <span style="color:var(--muted);">(optional)</span></label>
-      <input type="text" name="department"/>
-    </div>
-    <button class="btn btn-primary btn-full" type="submit">Send Verification OTP</button>
-  </form>
+<div style="max-width:480px;margin:0 auto;">
+  <h1>Create <em>Account</em></h1>
+  <p class="subtitle">Step 1 of 2 — Enter your details</p>
+
+  <div class="card">
+    <form method="POST">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" autofocus required placeholder="Nandini Dahiya"/>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" required placeholder="you@example.com"/>
+      </div>
+      <div class="form-group">
+        <label>Phone <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+        <input type="tel" name="phone" placeholder="+91-9876543210"/>
+      </div>
+      <div class="form-group" style="margin-bottom:24px;">
+        <label>Department <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+        <input type="text" name="department" placeholder="Engineering"/>
+      </div>
+      <button class="btn btn-primary btn-full" type="submit">Send OTP to Email →</button>
+    </form>
+  </div>
+
+  <hr class="divider"/>
+  <a class="link-small" href="{{ url_for('login') }}">→ Already have an account? Sign in</a>
 </div>
-
-<hr class="divider"/>
-<a class="link-small" href="{{ url_for('login') }}">→ Already have an account? Sign in</a>
 {% endblock %}

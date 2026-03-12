@@ -1,31 +1,58 @@
 {% extends "base.html" %}
 {% block title %}Dashboard — UserDB{% endblock %}
 {% block content %}
+
 <h1>Your <em>Record</em></h1>
 <p class="subtitle">Logged in as {{ user['username'] }}</p>
 
+<!-- Quick Action Cards -->
+<div class="action-cards">
+  <a href="{{ url_for('edit') }}" class="action-card">
+    <div class="action-icon">✏️</div>
+    <div class="action-label">Edit Record</div>
+    <div class="action-desc">Update your personal details</div>
+  </a>
+  <a href="{{ url_for('import_excel') }}" class="action-card">
+    <div class="action-icon">📊</div>
+    <div class="action-label">Import Excel</div>
+    <div class="action-desc">Bulk import users from file</div>
+  </a>
+  <a href="{{ url_for('register') }}" class="action-card">
+    <div class="action-icon">👤</div>
+    <div class="action-label">New User</div>
+    <div class="action-desc">Register a new account</div>
+  </a>
+  <a href="{{ url_for('admin_users') }}" class="action-card">
+    <div class="action-icon">👑</div>
+    <div class="action-label">All Users</div>
+    <div class="action-desc">View all system records</div>
+  </a>
+</div>
+
+<!-- User Record -->
 <div class="card">
+  <div class="card-header">
+    <span>Personal Record</span>
+    <span class="badge badge-green">Active</span>
+  </div>
   <dl class="record">
     <dt>Name</dt>       <dd>{{ user['name'] }}</dd>
     <dt>Email</dt>      <dd>{{ user['email'] }}</dd>
     <dt>Phone</dt>      <dd>{{ user['phone'] or '—' }}</dd>
     <dt>Department</dt> <dd>{{ user['department'] or '—' }}</dd>
-    <dt>Username</dt>   <dd>
-      <span class="badge badge-gold">{{ user['username'] }}</span>
-    </dd>
-    <dt>Status</dt>     <dd>
-      <span class="badge badge-green">Active</span>
-    </dd>
-    <dt>Last Login</dt> <dd style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);">
-      {{ user['last_login'] or 'First session' }}
-    </dd>
-    <dt>Member Since</dt><dd style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);">
-      {{ user['created_at'][:10] }}
-    </dd>
+    <dt>Username</dt>   <dd><span class="badge badge-gold">{{ user['username'] }}</span></dd>
+    <dt>Last Login</dt> <dd class="mono">{{ user['last_login'] or 'First session' }}</dd>
+    <dt>Member Since</dt><dd class="mono">{{ user['created_at'][:10] }}</dd>
   </dl>
+</div>
 
-  <div class="actions">
-    <a class="btn btn-outline" href="{{ url_for('edit') }}">Edit Record</a>
+<!-- Danger Zone -->
+<div class="card danger-zone">
+  <div class="dz-content">
+    <div>
+      <div class="dz-title">Delete Account</div>
+      <div class="dz-desc">Permanently remove your account and all data. This cannot be undone.</div>
+    </div>
     <form method="POST" action="{{ url_for('delete') }}"
           onsubmit="return confirm('Permanently delete your account? This cannot be undone.')">
       <button class="btn btn-danger" type="submit">Delete Account</button>
@@ -33,9 +60,78 @@
   </div>
 </div>
 
-<hr class="divider"/>
-<div style="display:flex;justify-content:space-between;">
+<div style="display:flex;justify-content:space-between;margin-top:8px;">
   <a class="link-small" href="{{ url_for('change_password') }}">→ Change password</a>
   <a class="link-small" href="{{ url_for('logout') }}">→ Logout</a>
 </div>
+
+<style>
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.action-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px 16px;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.15s;
+  display: block;
+}
+.action-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.action-icon { font-size: 24px; margin-bottom: 10px; }
+.action-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.action-desc { font-size: 13px; color: var(--muted); }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+.danger-zone {
+  border-color: rgba(192,57,43,0.3);
+  background: rgba(192,57,43,0.04);
+}
+.dz-content { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.dz-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--danger);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.dz-desc { font-size: 14px; color: var(--muted); }
+
+@media (max-width: 600px) {
+  .action-cards { grid-template-columns: repeat(2, 1fr); }
+  .dz-content { flex-direction: column; align-items: flex-start; }
+}
+</style>
 {% endblock %}
